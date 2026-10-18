@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 
 from network import DATA_PATH, Network
 from routing import fastest_route
@@ -17,7 +17,7 @@ def create_app(data_path=DATA_PATH):
 
     @app.get("/")
     def index():
-        return "<h1>Delhi Metro Route Planner</h1>"
+        return render_template("index.html")
 
     @app.before_request
     def check_network():
