@@ -164,7 +164,7 @@ $('#route-form').addEventListener('submit', async event => {
     showJourney(result);
     status(`Route ready. ${minutes(result.seconds)} minutes, ${result.interchanges} ${result.interchanges === 1 ? 'interchange' : 'interchanges'}.`);
   } catch (error) {
-    if (currentRequest === requestId) status(error instanceof TypeError ? 'Cannot reach the local app. Check that it is running, then try again.' : error.message, true);
+    if (currentRequest === requestId) status(error instanceof TypeError ? 'Cannot reach the server. Please try again.' : error.message, true);
   } finally {
     if (currentRequest === requestId) {
       $('#find-route').disabled = false;
@@ -206,7 +206,7 @@ async function init() {
     $('#find-route').disabled = $('#full-network').disabled = $('#clear-route').disabled = false;
     status();
   } catch (error) {
-    status(error instanceof TypeError ? 'Cannot load the metro network. Check the local app and reload this page.' : error.message, true);
+    status(error instanceof TypeError ? 'Cannot load the metro network. Please reload the page.' : error.message, true);
   }
 }
 init();
