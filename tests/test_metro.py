@@ -1,5 +1,7 @@
 import pytest
+import json
 
+from app import create_app
 from network import Network
 from routing import fastest_route
 
@@ -186,3 +188,80 @@ def test_real_network_journeys(network, source, destination):
     assert route["interchanges"] == sum(
         leg["kind"] == "transfer" for leg in route["legs"]
     )
+
+@pytest.fixture(scope="module")
+def client():
+    return create_app().test_client()
+
+
+def test_page_assets_and_network(client, network):
+    assert client.get("/").status_code == 200
+
+    response = client.get("/api/network")
+    assert response.status_code == 200
+    assert len(response.json["stations"]) == len(network.stations)
+
+    for path in (
+        "/static/app.js",
+        "/static/map.js",
+        "/static/style.css",
+        "/static/vendor/leaflet.js",
+        "/static/vendor/leaflet.css",
+    ):
+        assert client.get(path).status_code == 200
+
+
+def test_route_api_has_known_historical_time(client):
+    response = client.post(
+        "/api/route",
+        json={"source": "DSG", "destination": "JLML"},
+    )
+
+    assert response.status_code == 200
+    assert response.json["seconds"] == 135
+    assert response.json["station_ids"] == ["DSG", "JLML"]
+
+
+@pytest.mark.parametrize("body", [
+    {},
+    {"source": "fake", "destination": "RI"},
+    {"source": ["RI"], "destination": "NDI"},
+    [],
+    None,
+])
+def test_bad_requests_remain_json_errors(client, body):
+    response = client.post("/api/route", json=body)
+
+    assert response.status_code == 400
+    assert response.json["error"]
+
+
+def test_malformed_json_returns_error(client):
+    response = client.post(
+        "/api/route",
+        data="{oops",
+        content_type="application/json",
+    )
+
+    assert response.status_code == 400
+    assert response.json["error"]
+
+
+def test_disconnected_route_http_response(tmp_path):
+    network = small_network([
+        ("A", "B", "R", 60),
+        ("X", "Y", "R", 60),
+    ])
+
+    path = tmp_path / "network.json"
+    path.write_text(json.dumps(network.data))
+
+    client = create_app(path).test_client()
+
+    response = client.post(
+        "/api/route",
+        json={"source": "A", "destination": "X"},
+    )
+
+    assert response.status_code == 404
+    assert "No route" in response.json["error"]
