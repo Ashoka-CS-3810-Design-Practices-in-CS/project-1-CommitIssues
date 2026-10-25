@@ -2,4 +2,4 @@
 
 Station coordinates and connections: [delhi-metro-react](https://github.com/biomathcode/delhi-metro-react) and [© OpenStreetMap contributors](https://www.openstreetmap.org/copyright).
 
-Travel times: [historical GTFS data](https://github.com/adot-7/metroshell/releases/tag/v1.0.0), with distance-based estimates where unavailable. Each transfer adds five minutes.
+Travel times: estimates prepared from the public Sarthi/AutoPe backend using endpoints described in [these research notes](https://github.com/tashifkhan/delhi-metro/blob/main/docs/dmrc-sarthi-api-research.md). Each transfer adds five minutes.

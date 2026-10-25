@@ -218,7 +218,7 @@ def test_route_api_has_known_historical_time(client):
     )
 
     assert response.status_code == 200
-    assert response.json["seconds"] == 135
+    assert response.json["seconds"] == 96
     assert response.json["station_ids"] == ["DSG", "JLML"]
 
 
