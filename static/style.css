@@ -1,4 +1,4 @@
-{
+* {
   box-sizing: border-box;
 }
 
@@ -88,4 +88,52 @@ button:disabled {
 
 [hidden] {
   display: none;
+}
+
+.map-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+#map {
+  height: 500px;
+  border: 1px solid #bac5bb;
+  border-radius: 8px;
+  background: #edf0e7;
+}
+
+#map-caption,
+#tile-status {
+  font-size: 14px;
+  color: #596d61;
+}
+
+.endpoint {
+  background: transparent;
+  border: 0;
+}
+
+.endpoint span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 3px solid white;
+  border-radius: 50%;
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+  box-shadow: 0 2px 7px #182e3b40;
+}
+
+.endpoint-a {
+  background: #233d37;
+}
+
+.endpoint-b {
+  background: #b94235;
 }

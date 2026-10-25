@@ -4,8 +4,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Delhi Metro Planner</title>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='vendor/leaflet.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  <script defer src="{{ url_for('static', filename='app.js') }}"></script>
+
+  <script defer src="{{ url_for('static', filename='vendor/leaflet.js') }}"></script>
+  <script type="module" src="{{ url_for('static', filename='app.js') }}"></script>
 </head>
 <body>
   <main>
@@ -29,6 +33,20 @@
     </p>
 
     <section id="journey" aria-label="Journey details" hidden></section>
+
+    <section aria-label="Interactive metro map">
+      <div class="map-heading">
+        <h2>Metro map</h2>
+        <button id="full-network" type="button" disabled>Full network</button>
+      </div>
+
+      <div id="map" aria-label="Metro stations and routes"></div>
+
+      <p id="map-caption">Explore the city</p>
+      <p id="tile-status" hidden>
+        Street map unavailable. Metro network still works.
+      </p>
+    </section>
   </main>
 </body>
 </html>

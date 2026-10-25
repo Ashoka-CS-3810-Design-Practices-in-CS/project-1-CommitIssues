@@ -1,10 +1,14 @@
+import {MetroMap} from './map.js';
+
 const source = document.querySelector('#source');
 const destination = document.querySelector('#destination');
 const findButton = document.querySelector('#find-route');
 const clearButton = document.querySelector('#clear-route');
+const fullNetworkButton = document.querySelector('#full-network');
 const status = document.querySelector('#status');
 const journey = document.querySelector('#journey');
 
+let metroMap;
 let stations;
 let lines;
 let requestId = 0;
@@ -22,6 +26,9 @@ function clearJourney() {
   journey.hidden = true;
   status.textContent = '';
   findButton.disabled = false;
+
+  metroMap.clearRoute();
+  metroMap.setEndpoints(source.value, destination.value);
 }
 
 function showJourney(route) {
@@ -75,6 +82,7 @@ function showJourney(route) {
     'Estimated time includes line changes. Train waiting time is excluded.'
   );
 
+  metroMap.showRoute(route);
   journey.hidden = false;
 }
 
@@ -123,6 +131,12 @@ clearButton.addEventListener('click', () => {
   source.value = '';
   destination.value = '';
   clearJourney();
+  metroMap.map.closePopup();
+  metroMap.fullView();
+});
+
+fullNetworkButton.addEventListener('click', () => {
+  metroMap.fullView();
 });
 
 async function init() {
@@ -139,6 +153,8 @@ async function init() {
     lines = Object.fromEntries(
       network.lines.map(line => [line.id, line])
     );
+
+    metroMap = new MetroMap(network, stations, lines);
 
     const sortedStations = [...network.stations].sort(
       (a, b) => a.name.localeCompare(b.name)
@@ -159,10 +175,11 @@ async function init() {
 
     findButton.disabled = false;
     clearButton.disabled = false;
+    fullNetworkButton.disabled = false;
     status.textContent = '';
   } catch (error) {
     status.textContent = error instanceof TypeError
-      ? 'Cannot load stations. Check the local app and reload.'
+      ? 'Cannot load the metro network. Check the local app and reload.'
       : error.message;
   }
 }
