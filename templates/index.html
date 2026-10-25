@@ -3,50 +3,71 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Delhi Metro Planner</title>
-
+  <meta name="theme-color" content="#f6f5f0">
+  <title>Delhi Metro · Commit Issues</title>
+  <link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}" type="image/svg+xml">
   <link rel="stylesheet" href="{{ url_for('static', filename='vendor/leaflet.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-
   <script defer src="{{ url_for('static', filename='vendor/leaflet.js') }}"></script>
   <script type="module" src="{{ url_for('static', filename='app.js') }}"></script>
 </head>
 <body>
-  <main>
-    <h1>Delhi Metro Planner</h1>
+  <header class="site-header">
+    <a class="brand" href="/" aria-label="Delhi Metro home">
+      <svg viewBox="0 0 40 40" width="38" height="38" aria-hidden="true"><rect width="40" height="40" rx="12" fill="currentColor"/><path d="M10 28V12l10 10 10-10v16" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>metro<span class="brand-city"> / delhi</span></span>
+    </a>
+    <span class="team-name">COMMIT ISSUES <span class="team-dot">●</span></span>
+  </header>
 
-    <form id="route-form">
-      <label for="source">Starting station</label>
-      <select id="source" required disabled></select>
+  <main class="workspace">
+    <aside class="planner" aria-label="Journey planner">
+      <h1 class="eyebrow">DELHI METRO ROUTE PLANNER</h1>
+      <form id="route-form" novalidate>
+        <div class="station-field" id="source-field">
+          <label for="source"><span class="field-letter">A</span> Starting station</label>
+          <input id="source" name="source" type="text" placeholder="Station name or code" autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="source-options" aria-describedby="search-help" disabled>
+          <div id="source-options" class="suggestions" role="listbox" aria-label="Starting stations" hidden></div>
+        </div>
+        <div class="station-field" id="destination-field">
+          <label for="destination"><span class="field-letter destination-letter">B</span> Destination</label>
+          <input id="destination" name="destination" type="text" placeholder="Where are you heading?" autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="destination-options" aria-describedby="search-help" disabled>
+          <div id="destination-options" class="suggestions" role="listbox" aria-label="Destination stations" hidden></div>
+        </div>
+        <p id="search-help" class="sr-only">Type a name or station code, then select a suggestion. Use arrow keys and Enter to select.</p>
+        <div class="form-actions">
+          <button type="submit" class="primary-button" id="find-route" disabled><span>Find route</span><span aria-hidden="true">↗</span></button>
+          <button type="button" class="clear-button" id="clear-route" disabled>Clear</button>
+        </div>
+      </form>
+      <p id="status" class="status" role="status" aria-live="polite">Loading the metro network…</p>
 
-      <label for="destination">Destination</label>
-      <select id="destination" required disabled></select>
-
-      <div class="actions">
-        <button id="find-route" type="submit" disabled>Find route</button>
-        <button id="clear-route" type="button" disabled>Clear</button>
+      <div class="journey-area">
+        <section id="empty-state" class="empty-state" aria-label="Getting started">
+          <svg viewBox="0 0 270 64" class="route-sketch" aria-hidden="true"><path d="M6 42h61c27 0 24-25 50-25h65c24 0 23 25 51 25h31" stroke="#e8e3dc" stroke-width="9" fill="none" stroke-linecap="round"/><path d="M6 42h61c27 0 24-25 50-25h65" stroke="#bf493b" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M182 17c24 0 23 25 51 25h31" stroke="#337dc1" stroke-width="3" fill="none" stroke-linecap="round"/><g fill="#fff" stroke="#bf493b" stroke-width="2"><circle cx="23" cy="42" r="4"/><circle cx="62" cy="42" r="4"/><circle cx="128" cy="17" r="4"/></g><circle cx="182" cy="17" r="7" fill="#fff" stroke="#253b37" stroke-width="2"/><circle cx="247" cy="42" r="4" fill="#fff" stroke="#337dc1" stroke-width="2"/></svg>
+          <h2>Every connection, made simple.</h2>
+          <p>Choose two stations to see your fastest route, stops and line changes.</p>
+        </section>
+        <section id="journey" aria-label="Journey details" hidden></section>
       </div>
-    </form>
+    </aside>
 
-    <p id="status" role="status" aria-live="polite">
-      Loading stations…
-    </p>
-
-    <section id="journey" aria-label="Journey details" hidden></section>
-
-    <section aria-label="Interactive metro map">
+    <section class="map-panel" aria-label="Interactive metro network">
       <div class="map-heading">
-        <h2>Metro map</h2>
-        <button id="full-network" type="button" disabled>Full network</button>
+        <p id="network-summary">Delhi & National Capital Region</p>
+        <button type="button" class="map-reset" id="full-network" disabled><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 2H2v4m8-4h4v4M2 10v4h4m8-4v4h-4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg> Full network</button>
       </div>
-
-      <div id="map" aria-label="Metro stations and routes"></div>
-
-      <p id="map-caption">Explore the city</p>
-      <p id="tile-status" hidden>
-        Street map unavailable. Metro network still works.
-      </p>
+      <div class="map-wrap">
+        <div id="map" aria-label="Metro map. Use the arrow keys to pan and plus or minus to zoom."></div>
+        <div class="map-label"><span class="map-label-dot"></span><span id="map-caption">Explore the city</span></div>
+        <p class="tile-status" id="tile-status" hidden>Street map unavailable · Metro network still works</p>
+      </div>
+      <div class="map-footer">
+        <div class="legend" id="line-legend" aria-label="Metro lines"></div>
+        <div class="map-key"><span><i class="key-station"></i> Station</span><span><i class="key-interchange"></i> Interchange</span><span><i class="key-walk"></i> Walk</span><span class="map-hint">Select a station to explore</span></div>
+      </div>
     </section>
   </main>
+  <noscript><p class="noscript">Enable JavaScript to use station search and the interactive map.</p></noscript>
 </body>
 </html>
